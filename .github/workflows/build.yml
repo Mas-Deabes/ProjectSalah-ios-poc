@@ -1,0 +1,42 @@
+name: Build TrollStore IPA
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build without signing
+        run: |
+          xcodebuild build \
+            -project ProjectSalah.xcodeproj \
+            -scheme ProjectSalah \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package as .tipa
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/ProjectSalah.app Payload/
+          zip -qr ProjectSalah.tipa Payload
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          files: ProjectSalah.tipa

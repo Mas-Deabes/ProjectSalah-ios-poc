@@ -3,26 +3,47 @@ import FamilyControls
 
 struct ContentView: View {
     @State private var status = AuthorizationCenter.shared.authorizationStatus
+    @State private var selection = Shared.loadSelection() ?? FamilyActivitySelection()
+    @State private var showPicker = false
     @State private var message = ""
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("ProjectSalah")
-                .font(.largeTitle)
-                .bold()
+        NavigationStack {
+            Form {
+                Section("1. Permission") {
+                    Text("Screen Time access: \(statusText)")
+                    Button("Request Screen Time access") { requestAccess() }
+                }
 
-            Text("Screen Time access: \(statusText)")
+                Section("2. Apps that stay unlocked") {
+                    Text("Selected: \(selection.applicationTokens.count) apps")
+                    Button("Choose allowed apps") { showPicker = true }
+                }
 
-            Button("Request Screen Time access") {
-                requestAccess()
+                Section("3. Test the lock") {
+                    Button("Lock now") {
+                        PrayerLock.lock()
+                        message = "Locked. Try opening another app."
+                    }
+                    .tint(.red)
+
+                    Button("I've prayed") {
+                        PrayerLock.unlock()
+                        message = "Unlocked."
+                    }
+                    .tint(.green)
+                }
+
+                if !message.isEmpty {
+                    Section { Text(message) }
+                }
             }
-            .buttonStyle(.borderedProminent)
-
-            Text(message)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            .navigationTitle("ProjectSalah")
+            .familyActivityPicker(isPresented: $showPicker, selection: $selection)
+            .onChange(of: selection) { newValue in
+                Shared.saveSelection(newValue)
+            }
         }
-        .padding()
     }
 
     private var statusText: String {

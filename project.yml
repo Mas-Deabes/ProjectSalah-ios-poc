@@ -15,7 +15,7 @@ targets:
   ProjectSalah:
     type: application
     platform: iOS
-    sources: [App]
+    sources: [App, Shared]
     scheme: {}
     info:
       path: App/Info.plist

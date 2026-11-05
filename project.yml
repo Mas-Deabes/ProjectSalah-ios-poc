@@ -33,3 +33,27 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sif.projectsalah
+    dependencies:
+      - target: ProjectSalahMonitor
+
+  ProjectSalahMonitor:
+    type: app-extension
+    platform: iOS
+    sources: [Monitor, Shared]
+    info:
+      path: Monitor/Info.plist
+      properties:
+        CFBundleDisplayName: ProjectSalahMonitor
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivity.monitor-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).DeviceActivityMonitorExtension
+    entitlements:
+      path: Monitor/ProjectSalahMonitor.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups: [group.com.sif.projectsalah]
+        application-identifier: ABCDE12345.com.sif.projectsalah.monitor
+        com.apple.developer.team-identifier: ABCDE12345
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sif.projectsalah.monitor

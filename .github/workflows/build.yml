@@ -31,12 +31,18 @@ jobs:
 
       - name: Add entitlements with ldid
         run: |
-          ldid -SApp/ProjectSalah.entitlements \
-            build/Build/Products/Release-iphoneos/ProjectSalah.app/ProjectSalah
+          APP=build/Build/Products/Release-iphoneos/ProjectSalah.app
+          ldid -SMonitor/ProjectSalahMonitor.entitlements \
+            "$APP/PlugIns/ProjectSalahMonitor.appex/ProjectSalahMonitor"
+          ldid -SApp/ProjectSalah.entitlements "$APP/ProjectSalah"
 
       - name: Show entitlements
         run: |
-          ldid -e build/Build/Products/Release-iphoneos/ProjectSalah.app/ProjectSalah
+          APP=build/Build/Products/Release-iphoneos/ProjectSalah.app
+          echo "--- Extension ---"
+          ldid -e "$APP/PlugIns/ProjectSalahMonitor.appex/ProjectSalahMonitor"
+          echo "--- App ---"
+          ldid -e "$APP/ProjectSalah"
 
       - name: Package as .tipa
         run: |

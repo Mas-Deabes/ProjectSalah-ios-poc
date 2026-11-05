@@ -4,7 +4,7 @@ import SwiftUI
 struct ProjectSalahApp: App {
     var body: some Scene {
         WindowGroup {
-            Text("Hello from ProjectSalah")
+            ContentView()
         }
     }
 }

@@ -23,6 +23,11 @@ targets:
         CFBundleDisplayName: ProjectSalah
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    entitlements:
+      path: App/ProjectSalah.entitlements
+      properties:
+        com.apple.developer.family-controls: true
+        com.apple.security.application-groups: [group.com.sif.projectsalah]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sif.projectsalah

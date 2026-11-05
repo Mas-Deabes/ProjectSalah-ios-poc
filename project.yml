@@ -28,6 +28,8 @@ targets:
       properties:
         com.apple.developer.family-controls: true
         com.apple.security.application-groups: [group.com.sif.projectsalah]
+        application-identifier: ABCDE12345.com.sif.projectsalah
+        com.apple.developer.team-identifier: ABCDE12345
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sif.projectsalah

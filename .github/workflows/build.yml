@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Install XcodeGen and ldid
+        run: brew install xcodegen ldid
 
       - name: Generate Xcode project
         run: xcodegen generate
@@ -28,6 +28,15 @@ jobs:
             -sdk iphoneos \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO
+
+      - name: Add entitlements with ldid
+        run: |
+          ldid -SApp/ProjectSalah.entitlements \
+            build/Build/Products/Release-iphoneos/ProjectSalah.app/ProjectSalah
+
+      - name: Show entitlements
+        run: |
+          ldid -e build/Build/Products/Release-iphoneos/ProjectSalah.app/ProjectSalah
 
       - name: Package as .tipa
         run: |

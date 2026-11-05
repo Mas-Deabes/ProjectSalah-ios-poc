@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var showPicker = false
     @State private var message = ""
     @State private var log = Log.read()
+    @State private var activeSchedules = ""
 
     // In the real app this becomes "athan time + 5 minutes".
     private let graceMinutes = 2
@@ -48,12 +49,13 @@ struct ContentView: View {
                 }
 
                 Section("Log") {
+                    Text("Active schedules: \(activeSchedules.isEmpty ? "none" : activeSchedules)")
                     Text(log)
                         .font(.system(.caption, design: .monospaced))
-                    Button("Refresh log") { log = Log.read() }
+                    Button("Refresh log") { refreshLog() }
                     Button("Clear log", role: .destructive) {
                         Log.clear()
-                        log = Log.read()
+                        refreshLog()
                     }
                 }
             }
@@ -62,6 +64,7 @@ struct ContentView: View {
             .onChange(of: selection) { newValue in
                 Shared.saveSelection(newValue)
             }
+            .onAppear { refreshLog() }
         }
     }
 
@@ -86,14 +89,14 @@ struct ContentView: View {
         }
     }
 
-    // Registers a schedule with iOS. When it starts, iOS wakes the extension,
-    // which applies the lock. Apple requires intervals of at least 15 minutes,
-    // so the end is 15 minutes after the start. The lock stays on after it ends.
+    // Registers a schedule with iOS. The start lands on a whole minute,
+    // and the schedule only uses hour and minute.
     private func scheduleLock() {
         let calendar = Calendar.current
-        let start = Date().addingTimeInterval(TimeInterval(graceMinutes * 60))
+        let nextMinute = calendar.dateInterval(of: .minute, for: Date())!.end
+        let start = nextMinute.addingTimeInterval(TimeInterval(graceMinutes * 60))
         let end = start.addingTimeInterval(15 * 60)
-        let parts: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
+        let parts: Set<Calendar.Component> = [.hour, .minute]
 
         let schedule = DeviceActivitySchedule(
             intervalStart: calendar.dateComponents(parts, from: start),
@@ -114,8 +117,15 @@ struct ContentView: View {
         }
     }
 
+    private func refreshLog() {
+        log = Log.read()
+        activeSchedules = DeviceActivityCenter().activities
+            .map(\.rawValue)
+            .joined(separator: ", ")
+    }
+
     private func update(_ text: String) {
         message = text
-        log = Log.read()
+        refreshLog()
     }
 }
